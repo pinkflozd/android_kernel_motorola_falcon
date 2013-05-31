@@ -13,6 +13,7 @@
 		.section        ".start", "ax"
 		.arch	armv4
 
+		.arch	armv4
 __SA1100_start:
 
 		@ Preserve r8/r7 i.e. kernel entry values
