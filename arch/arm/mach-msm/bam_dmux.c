@@ -1633,7 +1633,11 @@ static void ul_timeout(struct work_struct *work)
 			ul_packet_written = 0;
 			queue_delayed_work(system_power_efficient_wq, &ul_timeout_work,
 					msecs_to_jiffies(UL_TIMEOUT_DELAY));
-		} else {
+                } else if(polling_mode) {
+                        DMUX_LOG_KERR("%s: BAM is in polling mode, delay UL power down", __func__);
+                        schedule_delayed_work(&ul_timeout_work,
+                                       msecs_to_jiffies(UL_TIMEOUT_DELAY));
+                } else {
 			ul_powerdown();
 		}
 	}
@@ -1655,8 +1659,10 @@ static int ssrestart_check(void)
 								__func__);
 	in_global_reset = 1;
 	ret = subsystem_restart("modem");
-	if (ret == -ENODEV)
-		PR_BUG("modem subsystem restart failed\n");
+	if (ret == -ENODEV) {
+		DMUX_LOG_KERR("%s: modem subsystem restart failed\n", __func__);
+		BUG();
+	}
 	return 1;
 }
 
