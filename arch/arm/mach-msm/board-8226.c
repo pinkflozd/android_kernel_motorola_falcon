@@ -242,8 +242,8 @@ void __init msm8226_add_drivers(void)
 	fan53555_regulator_init();
 	cpr_regulator_init();
 	tsens_tm_init_driver();
-#ifndef CONFIG_INTELLI_THERMAL
-	msm_thermal_device_init();
+#ifdef CONFIG_INTELLI_THERMAL
+	msm_thermal_device_init(NULL);
 #endif
 #ifdef CONFIG_LCD_KCAL
 	add_lcd_kcal_devices();
