@@ -228,7 +228,7 @@ static int msm_cpufreq_verify(struct cpufreq_policy *policy)
 	return 0;
 }
 
-static unsigned int msm_cpufreq_get_freq(unsigned int cpu)
+unsigned int msm_cpufreq_get_freq(unsigned int cpu)
 {
 	if (is_clk) {
 		if (cpu_clk[cpu])
@@ -237,7 +237,7 @@ static unsigned int msm_cpufreq_get_freq(unsigned int cpu)
 			return clk_get_rate(cpu_clk[0]) / 1000;
 	}
 
-	return acpuclk_get_rate(cpu);
+	return 0;
 }
 
 static int __cpuinit msm_cpufreq_init(struct cpufreq_policy *policy)
