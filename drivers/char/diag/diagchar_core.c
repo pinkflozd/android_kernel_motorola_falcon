@@ -358,6 +358,9 @@ int diag_find_polling_reg(int i)
 		else if (subsys_id == 0x57 && cmd_code_hi >= 0x0E &&
 			 cmd_code_lo <= 0x0E)
 			return 1;
+		else if (subsys_id == 0x57 && cmd_code_hi >= 0x0E &&
+			 cmd_code_lo <= 0x0E)
+			return 1;
 	}
 	return 0;
 }
