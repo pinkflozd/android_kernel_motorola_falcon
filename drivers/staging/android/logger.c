@@ -28,8 +28,15 @@
 #include <linux/time.h>
 #include <linux/interrupt.h>
 #include "logger.h"
+#include <linux/powersuspend.h>
 
 #include <asm/ioctls.h>
+
+static unsigned int log_enabled = 1;
+static unsigned int log_always_on = 0;
+
+module_param(log_enabled, uint, S_IWUSR | S_IRUGO);
+module_param(log_always_on, uint, S_IWUSR | S_IRUGO);
 
 #ifndef CONFIG_LOGCAT_SIZE
 #define CONFIG_LOGCAT_SIZE 256
@@ -453,6 +460,23 @@ static ssize_t do_write_log_from_user(struct logger_log *log,
 	return count;
 }
 
+static void log_early_suspend(struct power_suspend *handler)
+{
+	if (log_enabled)
+		log_enabled = 0;
+}
+
+static void log_late_resume(struct power_suspend *handler)
+{
+	if (!log_enabled)
+		log_enabled = 1;
+}
+
+static struct power_suspend log_suspend = {
+	.suspend = log_early_suspend,
+	.resume = log_late_resume,
+};
+
 /*
  * logger_aio_write - our write method, implementing support for write(),
  * writev(), and aio_write(). Writes are our fast path, and we try to optimize
@@ -466,6 +490,9 @@ ssize_t logger_aio_write(struct kiocb *iocb, const struct iovec *iov,
 	struct logger_entry header;
 	struct timespec now;
 	ssize_t ret = 0;
+
+	if (!log_enabled && !log_always_on)
+		return 0;
 
 	getnstimeofday(&now);
 
@@ -933,6 +960,8 @@ static int __init init_log(struct logger_log *log)
 static int __init logger_init(void)
 {
 	int ret;
+
+	register_power_suspend(&log_suspend);
 
 	ret = init_log(&log_main);
 	if (unlikely(ret))
