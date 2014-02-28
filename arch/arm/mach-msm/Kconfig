@@ -1895,6 +1895,12 @@ config INTELLI_PLUG
   help
     Generic Intelli-plug cpu hotplug driver for ARM SOCs
 
+config CPU_UNDERCLOCK
+	bool "enable CPU underclocking option"
+	default n
+	help
+	  Enable CPU underclocking to 192Mhz
+
 config MSM_AVS_HW
 	bool "Enable Adaptive Voltage Scaling (AVS)"
 	default n
