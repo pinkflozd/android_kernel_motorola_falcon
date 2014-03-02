@@ -457,11 +457,11 @@ static struct input_handler s2w_input_handler = {
 
 #ifdef CONFIG_POWERSUSPEND
 static void s2w_power_suspend(struct power_suspend *h) {
-	scr_suspended = true;
+	s2w_scr_suspended = true;
 }
 
 static void s2w_power_resume(struct power_suspend *h) {
-	scr_suspended = false;
+	s2w_scr_suspended = false;
 }
 
 static struct power_suspend s2w_power_suspend_handler = {
