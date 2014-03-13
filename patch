@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ---
  drivers/staging/android/lowmemorykiller.c | 53 ++++++++++++++++++++++++++++---
  1 file changed, 49 insertions(+), 4 deletions(-)
@@ -110,4 +111,64 @@ index 4251968..26a28c7 100644
  module_init(lowmem_init);
 -- 
 1.8.3.2
+=======
+From c7257af42c3124253935b6f2f7f9ac90e6d16120 Mon Sep 17 00:00:00 2001
+From: Paul Reioux <reioux@gmail.com>
+Date: Thu, 9 Jan 2014 01:03:53 -0800
+Subject: [PATCH] mm/swap: fix race on swap_info reuse between swapoff and
+ swapon
+
+Date	Thu, 09 Jan 2014 13:39:55 +0800
+
+swapoff clear swap_info's SWP_USED flag prematurely and free its resources
+after that. A concurrent swapon will reuse this swap_info while its previous
+resources are not cleared completely.
+
+These late freed resources are:
+- p->percpu_cluster
+- swap_cgroup_ctrl[type]
+- block_device setting
+- inode->i_flags &= ~S_SWAPFILE
+
+This patch clear SWP_USED flag after all its resources freed, so that swapon
+can reuse this swap_info by alloc_swap_info() safely.
+
+Signed-off-by: Weijie Yang <weijie.yang@samsung.com>
+Signed-off-by: Paul Reioux <reioux@gmail.com>
+---
+ mm/swapfile.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/mm/swapfile.c b/mm/swapfile.c
+index b8220f6..886e873 100644
+--- a/mm/swapfile.c
++++ b/mm/swapfile.c
+@@ -1778,7 +1778,6 @@ static void enable_swap_info(struct swap_info_struct *p, int prio,
+ 	p->max = 0;
+ 	swap_map = p->swap_map;
+ 	p->swap_map = NULL;
+-	p->flags = 0;
+ #ifdef CONFIG_FRONTSWAP
+ 	frontswap_invalidate_area(type);
+ #endif
+@@ -1803,6 +1802,16 @@ static void enable_swap_info(struct swap_info_struct *p, int prio,
+ 		mutex_unlock(&inode->i_mutex);
+ 	}
+ 	filp_close(swap_file, NULL);
++
++	/*
++	* clear SWP_USED flag after all resources freed
++	* so that swapon can reuse this swap_info in alloc_swap_info() safely
++	* it is ok to not hold p->lock after we cleared its SWP_WRITEOK
++	*/
++	spin_lock(&swap_lock);
++	p->flags = 0;
++	spin_unlock(&swap_lock);
++
+ 	err = 0;
+ 	atomic_inc(&proc_poll_event);
+ 	wake_up_interruptible(&proc_poll_wait);
+-- 
+1.8.5.5
+>>>>>>> 17fbfd9... Backport vnswap/frontswap/zswap to Moto G
 

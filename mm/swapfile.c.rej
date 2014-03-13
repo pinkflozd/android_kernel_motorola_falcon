@@ -1,20 +1,29 @@
---- mm/swapfile.c	2012-07-03 14:00:42.202319339 +1000
-+++ mm/swapfile.c	2012-06-01 21:37:23.000000000 +1000
-@@ -377,7 +377,7 @@
- 			spin_lock(&swap_lock);
- 			goto checks;
- 		}
--		if (si->swap_map[offset] == SWAP_HAS_CACHE) {
-+		if (vm_swap_full() && si->swap_map[offset] == SWAP_HAS_CACHE) {
- 			spin_lock(&swap_lock);
- 			goto checks;
- 		}
-@@ -392,7 +392,7 @@
- 			spin_lock(&swap_lock);
- 			goto checks;
- 		}
--		if (si->swap_map[offset] == SWAP_HAS_CACHE) {
-+		if (vm_swap_full() && si->swap_map[offset] == SWAP_HAS_CACHE) {
- 			spin_lock(&swap_lock);
- 			goto checks;
- 		}
+--- mm/swapfile.c
++++ mm/swapfile.c
+@@ -31,6 +31,10 @@
+ #include <linux/memcontrol.h>
+ #include <linux/poll.h>
+ #include <linux/oom.h>
++#ifdef CONFIG_FRONTSWAP
++#include <linux/frontswap.h>
++#include <linux/swapfile.h>
++#endif
+ 
+ #include <asm/pgtable.h>
+ #include <asm/tlbflush.h>
+@@ -1719,9 +1789,15 @@
+ 	swap_map = p->swap_map;
+ 	p->swap_map = NULL;
+ 	p->flags = 0;
++#ifdef CONFIG_FRONTSWAP
++	frontswap_invalidate_area(type);
++#endif
+ 	spin_unlock(&swap_lock);
+ 	mutex_unlock(&swapon_mutex);
+ 	vfree(swap_map);
++#ifdef CONFIG_FRONTSWAP
++	vfree(frontswap_map_get(p));
++#endif
+ 	/* Destroy swap account informatin */
+ 	swap_cgroup_swapoff(type);
+ 
