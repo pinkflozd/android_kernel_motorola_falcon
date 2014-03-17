@@ -285,6 +285,12 @@ endif # NETWORK_FILESYSTEMS
 source "fs/nls/Kconfig"
 source "fs/dlm/Kconfig"
 
+config AIO_OPTIMIZATION
+	bool "AIO kernel optimization patches"
+	default y
+	help
+	  An experimental AIO FS kernel optimization
+
 config ASYNC_FSYNC
 	bool "asynchronous fsync"
 	default n
@@ -296,7 +302,5 @@ config DYNAMIC_FSYNC
 	default y
 	help
 	  An experimental file sync control using new power_suspend driver 
-
-
 
 endmenu
