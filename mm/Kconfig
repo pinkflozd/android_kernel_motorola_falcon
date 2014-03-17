@@ -480,7 +480,7 @@ config PGTABLE_MAPPING
 config ZSWAP
 	bool "In-kernel swap page compression"
 	depends on FRONTSWAP && CRYPTO
-	select CRYPTO_LZO
+	select CRYPTO_LZ4
 	select ZSMALLOC_NEW
 	select ANDROID_LOW_MEMORY_KILLER_ADJUST_TASKSIZE if ANDROID_LOW_MEMORY_KILLER
 	default n
