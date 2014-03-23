@@ -45,6 +45,9 @@
 #include <linux/powersuspend.h>
 
 #include <trace/events/memkill.h>
+#if defined (CONFIG_SWAP) && (defined (CONFIG_ZSWAP) || defined (CONFIG_ZRAM))
+#include <linux/fs.h>
+#endif
 
 #ifdef CONFIG_HIGHMEM
 #define _ZONE ZONE_HIGHMEM
@@ -298,6 +301,9 @@ static int lowmem_shrink(struct shrinker *s, struct shrink_control *sc)
 	int other_file;
 	unsigned long nr_to_scan = sc->nr_to_scan;
 	struct zone_avail zall[MAX_NUMNODES][MAX_NR_ZONES];
+#if defined (CONFIG_SWAP) && (defined (CONFIG_ZSWAP) || defined (CONFIG_ZRAM))
+	struct sysinfo si;
+#endif
 
 	rcu_read_lock();
 	tsk = current->group_leader;
@@ -313,6 +319,14 @@ static int lowmem_shrink(struct shrinker *s, struct shrink_control *sc)
 			return 0;
 	}
 
+#if defined (CONFIG_SWAP) && (defined (CONFIG_ZSWAP) || defined (CONFIG_ZRAM))
+	si_swapinfo(&si);
+	other_free = global_page_state(NR_FREE_PAGES);
+	other_file = global_page_state(NR_FILE_PAGES) -
+						global_page_state(NR_SHMEM) +
+						(si.totalswap >> 2) -
+						total_swapcache_pages;
+#else
 	other_free = global_page_state(NR_FREE_PAGES);
 
 	if (global_page_state(NR_SHMEM) + total_swapcache_pages <
@@ -322,9 +336,14 @@ static int lowmem_shrink(struct shrinker *s, struct shrink_control *sc)
 						total_swapcache_pages;
 	else
 		other_file = 0;
+#endif
 
 	memset(zall, 0, sizeof(zall));
 	tune_lmk_param(&other_free, &other_file, sc, zall);
+
+
+	//pr_info("LMK: tuned other_free: %d\n", other_free);
+	//pr_info("LMK: tuned other_file: %d\n", other_file);
 
 	if (lowmem_adj_size < array_size)
 		array_size = lowmem_adj_size;
