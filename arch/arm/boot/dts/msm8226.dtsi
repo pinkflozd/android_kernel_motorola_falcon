@@ -1031,8 +1031,11 @@
 			< 384000000 1>,
 			< 787200000 2>,
 			<1190400000 3>;
-
-		cpu-vdd-supply = <&apc_vreg_corner>;
+		/*
+		* If Userspace Voltage Control is disabled, change this to
+		* <&apc_vreg_corner>;
+		*/
+		cpu-vdd-supply = <&pm8226_s2>;
 	};
 
 	qcom,cpubw {
