@@ -114,7 +114,7 @@ EXPORT_SYMBOL(bi_powerup_reason);
  */
 static inline void of_mbmver(u32 *ver) { }
 
-u32 bi_mbm_version(void)
+u32 __init bi_mbm_version(void)
 {
 	u32 version = 0xFFFFFFFF;
 
@@ -487,7 +487,7 @@ EXPORT_SYMBOL(bi_bootreason);
  * and hwrevision.
  */
 
-static int get_bootinfo(char *buf, char **start,
+static int __init get_bootinfo(char *buf, char **start,
 						off_t offset, int count,
 						int *eof, void *data)
 {
