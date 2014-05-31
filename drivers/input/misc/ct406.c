@@ -1479,7 +1479,7 @@ static void ct_power_suspend(struct power_suspend *h) {
 	struct ct406_data *ct = ct406_misc_data;
 	
 	ct_suspended = true;
-	if (!ct->prox_enabled) {
+	if (!ct->prox_enabled && (s2w_switch > 0 || dt2w_switch > 0)) {
 		forced = true;
 		ct406_enable_prox(ct);
 	}
@@ -1690,6 +1690,11 @@ static int ct406_probe(struct i2c_client *client,
 		goto error_revision_read_failed;
 	}
 	ct406_enable_prox(ct);
+
+#ifdef CONFIG_TOUCHSCREEN_PREVENT_SLEEP
+	if (s2w_switch > 0 || dt2w_switch > 0)
+		ct406_enable_prox(ct);
+#endif
 
 #ifdef CONFIG_HAS_EARLYSUSPEND
 	ct->ct406_early_suspend.suspend = ct406_suspend;
