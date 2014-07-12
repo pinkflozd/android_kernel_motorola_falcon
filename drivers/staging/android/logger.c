@@ -27,7 +27,6 @@
 #include <linux/slab.h>
 #include <linux/time.h>
 #include <linux/interrupt.h>
-#include <linux/powersuspend.h>
 #include "logger.h"
 #include <linux/powersuspend.h>
 
@@ -42,12 +41,6 @@ module_param(log_always_on, uint, S_IWUSR | S_IRUGO);
 #ifndef CONFIG_LOGCAT_SIZE
 #define CONFIG_LOGCAT_SIZE 256
 #endif
-
-static unsigned int log_enabled = 1;
-static unsigned int log_always_on = 0;
-
-module_param(log_enabled, uint, S_IWUSR | S_IRUGO);
-module_param(log_always_on, uint, S_IWUSR | S_IRUGO);
 
 static DEFINE_SPINLOCK(log_lock);
 static struct work_struct write_console_wq;
