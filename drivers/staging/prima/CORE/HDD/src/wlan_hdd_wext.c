@@ -90,8 +90,8 @@
 #include "wlan_hdd_tdls.h"
 #endif
 
-#ifdef CONFIG_HAS_EARLYSUSPEND
-#include <linux/earlysuspend.h>
+#ifdef CONFIG_POWERSUSPEND
+#include <linux/powersuspend.h>
 #endif
 #include "wlan_hdd_power.h"
 #include "qwlan_version.h"
@@ -114,9 +114,9 @@
 #include "qc_sap_ioctl.h"
 #include "sme_Api.h"
 
-#ifdef CONFIG_HAS_EARLYSUSPEND
-extern void hdd_suspend_wlan(struct early_suspend *wlan_suspend);
-extern void hdd_resume_wlan(struct early_suspend *wlan_suspend);
+#ifdef CONFIG_POWERSUSPEND
+extern void hdd_suspend_wlan(struct power_suspend *wlan_suspend);
+extern void hdd_resume_wlan(struct power_suspend *wlan_suspend);
 #endif
 
 #ifdef FEATURE_OEM_DATA_SUPPORT
@@ -3747,7 +3747,7 @@ static int iw_setint_getnone(struct net_device *dev, struct iw_request_info *inf
     int set_value = value[1];
     int ret = 0; /* success */
     int enable_pbm, enable_mp;
-#ifdef CONFIG_HAS_EARLYSUSPEND
+#ifdef CONFIG_POWERSUSPEND
     v_U8_t nEnableSuspendOld;
 #endif
     INIT_COMPLETION(pWextState->completion_var);
@@ -3903,7 +3903,7 @@ static int iw_setint_getnone(struct net_device *dev, struct iw_request_info *inf
                  sme_DisablePowerSave(hHal, ePMC_STANDBY_MODE_POWER_SAVE);
                  break;
               case  8: //Request Standby
-#ifdef CONFIG_HAS_EARLYSUSPEND
+#ifdef CONFIG_POWERSUSPEND
 #endif
                  break;
               case  9: //Start Auto Bmps Timer
@@ -3912,23 +3912,23 @@ static int iw_setint_getnone(struct net_device *dev, struct iw_request_info *inf
               case  10://Stop Auto BMPS Timer
                  sme_StopAutoBmpsTimer(hHal);
                  break;
-#ifdef CONFIG_HAS_EARLYSUSPEND
+#ifdef CONFIG_POWERSUSPEND
               case  11://suspend to standby
-#ifdef CONFIG_HAS_EARLYSUSPEND
+#ifdef CONFIG_POWERSUSPEND
                  nEnableSuspendOld = (WLAN_HDD_GET_CTX(pAdapter))->cfg_ini->nEnableSuspend;
                  (WLAN_HDD_GET_CTX(pAdapter))->cfg_ini->nEnableSuspend = 1;
                  (WLAN_HDD_GET_CTX(pAdapter))->cfg_ini->nEnableSuspend = nEnableSuspendOld;
 #endif
                  break;
               case  12://suspend to deep sleep
-#ifdef CONFIG_HAS_EARLYSUSPEND
+#ifdef CONFIG_POWERSUSPEND
                  nEnableSuspendOld = (WLAN_HDD_GET_CTX(pAdapter))->cfg_ini->nEnableSuspend;
                  (WLAN_HDD_GET_CTX(pAdapter))->cfg_ini->nEnableSuspend = 2;
                  (WLAN_HDD_GET_CTX(pAdapter))->cfg_ini->nEnableSuspend = nEnableSuspendOld;
 #endif
                  break;
               case  13://resume from suspend
-#ifdef CONFIG_HAS_EARLYSUSPEND
+#ifdef CONFIG_POWERSUSPEND
 #endif
                  break;
 #endif
