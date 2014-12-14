@@ -44,7 +44,7 @@
 /*
  * 0 - Enabled, 1 - Auto Suspend, 2 - Disabled
  */
-static unsigned int log_mode = 2; // Disabled by default
+static unsigned int log_mode = 1; // Disabled by default
 static unsigned int log_enabled = 1; // Do not change this value
 module_param(log_mode, uint, S_IWUSR | S_IRUGO);
 
