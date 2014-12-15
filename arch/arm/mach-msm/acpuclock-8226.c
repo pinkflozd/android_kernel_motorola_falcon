@@ -76,13 +76,16 @@ static struct clkctl_acpu_speed acpu_freq_tbl_8226_1p1[] = {
 
 #ifdef CONFIG_USERSPACE_VOLTAGE_CONTROL
 static struct clkctl_acpu_speed acpu_freq_tbl_8226_1p2[] = {
+#ifdef CPU_UNDERCLOCK
+	{ 1,  192000, ACPUPLL, 5, 2,   1100000,    1100000, 3 },
+#endif
 	{ 1,  300000, PLL0,    4, 2,   1140000,    1140000, 4 },
 	{ 1,  384000, ACPUPLL, 5, 2,   1140000,    1140000, 4 },
 	{ 1,  600000, PLL0,    4, 0,   1140000,    1140000, 6 },
 	{ 1,  787200, ACPUPLL, 5, 0,   1140000,    1140000, 6 },
 	{ 1,  998400, ACPUPLL, 5, 0,   1150000,    1150000, 7 },
 	{ 1, 1094400, ACPUPLL, 5, 0,   1150000,    1150000, 7 },
-	{ 1, 1190400, ACPUPLL, 5, 0,   1150000,    1150000, 7 },
+	{ 1, 1190400, ACPUPLL, 5, 0,   1150000,    1150000, 8 },
 	{ 0 }
 };
 #else
