@@ -589,9 +589,11 @@ static void ct406_prox_mode_uncovered(struct ct406_data *ct)
                 piht = ct->pdata_max;
 
 #ifdef CONFIG_TOUCHSCREEN_PREVENT_SLEEP
-        prox_covered = false;
-        if (screen_suspended)
-                touch_resume();
+        if (dt2w_switch > 0) {
+                prox_covered = false;
+                if (screen_suspended)
+                        touch_resume();
+            }
 #endif
         ct->prox_mode = CT406_PROX_MODE_UNCOVERED;
         ct->prox_low_threshold = pilt;
@@ -614,10 +616,12 @@ static void ct406_prox_mode_covered(struct ct406_data *ct)
         ct->prox_high_threshold = piht;
         ct406_write_prox_thresholds(ct);
 #ifdef CONFIG_TOUCHSCREEN_PREVENT_SLEEP
-        prox_covered = true;
-        if (screen_suspended)
-        {
-                delayed_touch_suspend();
+        if (dt2w_switch > 0) {
+                prox_covered = true;
+                if (screen_suspended)
+                {
+                        delayed_touch_suspend();
+                }
         }
 #endif
         pr_info("%s: Prox mode covered\n", __func__);
@@ -1811,7 +1815,8 @@ static int ct406_probe(struct i2c_client *client,
                 goto error_revision_read_failed;
         }
 #ifdef CONFIG_TOUCHSCREEN_PREVENT_SLEEP
-        ct406_enable_prox(ct);
+        if (dt2w_switch > 0)
+            ct406_enable_prox(ct);
 #endif
 
 #ifdef CONFIG_HAS_EARLYSUSPEND

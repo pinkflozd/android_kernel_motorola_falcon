@@ -36,8 +36,12 @@ MODULE_LICENSE("GPL");
 
 static LIST_HEAD(input_dev_list);
 static LIST_HEAD(input_handler_list);
+#ifdef CONFIG_TOUCHSCREEN_PREVENT_SLEEP
+#include <linux/input/doubletap2wake.h>
+
 extern bool screen_suspended;
 extern bool prox_covered;
+#endif
 
 /*
  * input_mutex protects access to both input_dev_list and input_handler_list.
@@ -378,8 +382,10 @@ void input_event(struct input_dev *dev,
 {
         unsigned long flags;
 
-        if (screen_suspended && prox_covered && code == KEY_POWER)
+#ifdef CONFIG_TOUCHSCREEN_PREVENT_SLEEP
+        if (dt2w_switch > 0 && screen_suspended && prox_covered && code == KEY_POWER)
               return;
+#endif
 
         if (is_event_supported(type, dev->evbit, EV_MAX))
         {
