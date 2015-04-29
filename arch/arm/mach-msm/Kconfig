@@ -3184,8 +3184,6 @@ config BRICKED_HOTPLUG
 	  This enables kernel based multi core control.
 	  (up/down hotplug based on load)
 
-endif
-
 config MSM_LIMITER
 	bool "MSM Frequency Limiter Driver"
 	depends on (LCD_NOTIFY || POWERSUSPEND || HAS_EARLYSUSPEND)
