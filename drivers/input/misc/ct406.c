@@ -657,7 +657,6 @@ static void ct406_device_power_off(struct ct406_data *ct)
                 }
         }
 
-	ct->power_on = 0;
 }
 
 static int ct406_device_power_on(struct ct406_data *ct)
