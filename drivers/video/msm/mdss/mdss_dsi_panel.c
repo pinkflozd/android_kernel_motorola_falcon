@@ -37,6 +37,10 @@
 #include <linux/powersuspend.h>
 #endif
 
+#ifdef CONFIG_TOUCHSCREEN_DOUBLETAP2WAKE
+#include <linux/input/doubletap2wake.h>
+#endif
+
 #define DT_CMD_HDR 6
 #define DROPBOX_DISPLAY_ISSUE "display_issue"
 #define ESD_DROPBOX_MSG "ESD event detected"
@@ -869,8 +873,10 @@ end:
        s2w_scr_suspended = false;
 #endif
 #ifdef CONFIG_TOUCHSCREEN_DOUBLETAP2WAKE
-       dt2w_scr_suspended = false;
-       ct_disable();
+      if (dt2w_switch > 0) {
+              dt2w_scr_suspended = false;
+              ct_disable();
+      }
 #endif
 
 	return 0;
@@ -938,8 +944,10 @@ disable_regs:
        s2w_scr_suspended = true;
 #endif
 #ifdef CONFIG_TOUCHSCREEN_DOUBLETAP2WAKE
-       ct_enable();
-       dt2w_scr_suspended = true;
+       if (dt2w_switch > 0) {
+               ct_enable();
+               dt2w_scr_suspended = true;
+       }
 #endif
 
 	return 0;
